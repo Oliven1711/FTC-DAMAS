@@ -1,0 +1,329 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
+@Autonomous(name = "DamasAutonomousPEARIGHT", group = "REGIONALAUTONOMOUS")
+public class DamasAutonomousPEARIGHT extends LinearOpMode {
+
+    private DcMotor e1;
+    private DcMotor d1;
+    private DcMotor braco;
+    private DcMotor bracoaux;
+
+    @Override
+    public void runOpMode() {
+        // Inicialização dos motores
+        e1 = hardwareMap.get(DcMotor.class, "e1");
+        d1 = hardwareMap.get(DcMotor.class, "d1");
+        braco = hardwareMap.get(DcMotor.class, "braco");
+        bracoaux = hardwareMap.get(DcMotor.class, "bracoaux");
+
+        // Configuração das direções dos motores
+        e1.setDirection(DcMotorSimple.Direction.REVERSE);
+        d1.setDirection(DcMotorSimple.Direction.FORWARD);
+        braco.setDirection(DcMotorSimple.Direction.FORWARD);
+        bracoaux.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        // Reset dos encoders
+        e1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        d1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        braco.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        bracoaux.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        // Configuração do Zero Power Behavior
+        braco.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        bracoaux.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        waitForStart();
+
+        // Sequência de ações a serem executadas
+        executeAction(new Runnable() {
+            @Override
+            public void run() {
+                runToFrenteUm();
+            }
+        });
+
+        executeAction(new Runnable() {
+            @Override
+            public void run() {
+                runToGiro180AntiHorarioUm();
+            }
+        });
+
+        executeAction(new Runnable() {
+            @Override
+            public void run() {
+                runToAtrasUm();
+            }
+        });
+
+        executeAction(new Runnable() {
+            @Override
+            public void run() {
+                runToLevantarGarraUm();
+            }
+        });
+
+        executeAction(new Runnable() {
+            @Override
+            public void run() {
+                runToSoltarBlocoUm();
+            }
+        });
+
+        executeAction(new Runnable() {
+            @Override
+            public void run() {
+                runToBaixarGarraUm();
+            }
+        });
+
+        executeAction(new Runnable() {
+            @Override
+            public void run() {
+                runToGiro90HorarioUm();
+            }
+        });
+
+        executeAction(new Runnable() {
+            @Override
+            public void run() {
+                runToFrenteDois();
+            }
+        });
+
+        executeAction(new Runnable() {
+            @Override
+            public void run() {
+                runToGiro90AntiHorarioUm();
+            }
+        });
+
+        executeAction(new Runnable() {
+            @Override
+            public void run() {
+                runToSoltarBlocoDois();
+            }
+        });
+
+        executeAction(new Runnable() {
+            @Override
+            public void run() {
+                runToLevantarGarraDois();
+            }
+        });
+
+        executeAction(new Runnable() {
+            @Override
+            public void run() {
+                runToFecharGarraUm();
+            }
+        });
+
+        executeAction(new Runnable() {
+            @Override
+            public void run() {
+                runToBaixarGarraDois();
+            }
+        });
+
+        executeAction(new Runnable() {
+            @Override
+            public void run() {
+                runToFrenteTres();
+            }
+        });
+
+        executeAction(new Runnable() {
+            @Override
+            public void run() {
+                runToGiro90AntiHorarioDois();
+            }
+        });
+
+        executeAction(new Runnable() {
+            @Override
+            public void run() {
+                runToTrasDois();
+            }
+        });
+
+        executeAction(new Runnable() {
+            @Override
+            public void run() {
+                runToLevantarGarraTres();
+            }
+        });
+
+        executeAction(new Runnable() {
+            @Override
+            public void run() {
+                runToSoltarBlocoTres();
+            }
+        });
+
+        executeAction(new Runnable() {
+            @Override
+            public void run() {
+                runToBaixarGarraTres();
+            }
+        });
+
+        executeAction(new Runnable() {
+            @Override
+            public void run() {
+                runToFrenteQuatro();
+            }
+        });
+
+        // Parada final dos motores
+        pararTodosOsMotores();
+    }
+
+    private void executeAction(Runnable action) {
+        action.run();
+        sleep(100); // Pequeno atraso entre ações
+    }
+
+    // Métodos ajustados para controle dos motores em cada ação específica
+    private void runToFrenteUm() {
+        e1.setTargetPosition(3774); // 1 metro para frente
+        d1.setTargetPosition(3774);
+        PosMotores(e1, d1, 0.5);
+    }
+
+    private void runToGiro180AntiHorarioUm() {
+        e1.setTargetPosition(1500);
+        d1.setTargetPosition(-1500);
+        PosMotores(e1, d1, 0.5);
+    }
+
+    private void runToAtrasUm() {
+        e1.setTargetPosition(-3774); // 1 metro para trás
+        d1.setTargetPosition(-3774);
+        PosMotores(e1, d1, 0.5);
+    }
+
+    private void runToLevantarGarraUm() {
+        bracoaux.setTargetPosition(3330); // 45 graus
+        PosMotor(bracoaux, 0.3);
+    }
+
+    private void runToSoltarBlocoUm() {
+        braco.setTargetPosition(72); // Abrir
+        PosMotor(braco, -0.2);
+    }
+
+    private void runToBaixarGarraUm() {
+        bracoaux.setTargetPosition(0);
+        PosMotor(bracoaux, 0.3);
+    }
+
+    private void runToGiro90HorarioUm() {
+        e1.setTargetPosition(500);
+        d1.setTargetPosition(-500);
+        PosMotores(e1, d1, 0.5);
+    }
+
+    private void runToFrenteDois() {
+        e1.setTargetPosition(3774);
+        d1.setTargetPosition(3774);
+        PosMotores(e1, d1, 0.5);
+    }
+
+    private void runToGiro90AntiHorarioUm() {
+        e1.setTargetPosition(-500);
+        d1.setTargetPosition(500);
+        PosMotores(e1, d1, 0.5);
+    }
+
+    private void runToSoltarBlocoDois() {
+        braco.setTargetPosition(72); // Abrir
+        PosMotor(braco, -0.3);
+    }
+
+    private void runToLevantarGarraDois() {
+        bracoaux.setTargetPosition(3330); // 45 graus
+        PosMotor(bracoaux, 0.3);
+    }
+
+    private void runToFecharGarraUm() {
+        braco.setTargetPosition(-72); // Fechar
+        PosMotor(braco, 0.3);
+    }
+
+    private void runToBaixarGarraDois() {
+        bracoaux.setTargetPosition(0);
+        PosMotor(bracoaux, 0.3);
+    }
+
+    private void runToFrenteTres() {
+        e1.setTargetPosition(3774);
+        d1.setTargetPosition(3774);
+        PosMotores(e1, d1, 0.5);
+    }
+
+    private void runToGiro90AntiHorarioDois() {
+        e1.setTargetPosition(-500);
+        d1.setTargetPosition(500);
+        PosMotores(e1, d1, 0.5);
+    }
+
+    private void runToTrasDois() {
+        e1.setTargetPosition(-3774);
+        d1.setTargetPosition(-3774);
+        PosMotores(e1, d1, 0.5);
+    }
+
+    private void runToLevantarGarraTres() {
+        bracoaux.setTargetPosition(3330);
+        PosMotor(bracoaux, 0.3);
+    }
+
+    private void runToSoltarBlocoTres() {
+        braco.setTargetPosition(72);
+        PosMotor(braco, -0.3);
+    }
+
+    private void runToBaixarGarraTres() {
+        bracoaux.setTargetPosition(0);
+        PosMotor(bracoaux, 0.3);
+    }
+
+    private void runToFrenteQuatro() {
+        e1.setTargetPosition(3774);
+        d1.setTargetPosition(3774);
+        PosMotores(e1, d1, 0.5);
+    }
+
+    // Métodos genéricos para controle dos motores
+    private void PosMotores(DcMotor motor1, DcMotor motor2, double power) {
+        motor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motor1.setPower(power);
+        motor2.setPower(power);
+
+        while (opModeIsActive() && motor1.isBusy() && motor2.isBusy()) {
+            // Aguardar conclusão do movimento
+        }
+    }
+
+    private void PosMotor(DcMotor motor, double power) {
+        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motor.setPower(power);
+
+        while (opModeIsActive() && motor.isBusy()) {
+        }
+    }
+
+    private void pararTodosOsMotores() {
+        e1.setPower(0);
+        d1.setPower(0);
+        braco.setPower(0);
+        bracoaux.setPower(0);
+    }
+}
