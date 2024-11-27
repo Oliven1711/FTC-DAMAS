@@ -1,0 +1,65 @@
+ackage DAMAS;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+@TeleOp(name = "DamasTeleOPPE", group = "REGIONALTELEOP")
+public class DamasTeleOPPE extends LinearOpMode {
+
+    private ElapsedTime runtime = new ElapsedTime();
+
+    private DcMotor e1;
+    private DcMotor d1;
+    private DcMotor braco;
+    private DcMotor bracoaux;
+
+    private double speedFactor = 0.7; // Fator de velocidade para o bracoaux
+
+    @Override
+    public void runOpMode() {
+        // Inicialização dos motores
+        e1 = hardwareMap.get(DcMotor.class, "e1");
+        d1 = hardwareMap.get(DcMotor.class, "d1");
+        braco = hardwareMap.get(DcMotor.class, "braco");
+        bracoaux = hardwareMap.get(DcMotor.class, "bracoaux");
+
+        e1.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        // Aguarda o início da operação
+        waitForStart();
+        if (opModeIsActive()) {
+            while (opModeIsActive()) {
+                // Controle dos motores
+                e1.setPower(-gamepad1.left_stick_y + gamepad1.right_stick_x);
+                d1.setPower(-gamepad1.left_stick_y - gamepad1.right_stick_x);
+
+                // Controle do motor do braço
+                if (gamepad2.y) {
+                    braco.setPower(0.8);
+                } else if (gamepad2.a) {
+                    braco.setPower(-0.6);
+                } else {
+                    braco.setPower(0);
+                }
+
+                // Controle do motor bracoaux com hat e speedFactor
+                double hat_y = gamepad2.dpad_up ? -1 : (gamepad2.dpad_down ? 1 : 0);
+                if (Math.abs(hat_y) > 0.1) {
+                    bracoaux.setPower(hat_y * speedFactor); // Aplica o fator de velocidade
+                } else {
+                    bracoaux.setPower(0.1); // Contra-gravidade mínima
+                }
+
+                // Atualização de telemetria
+                telemetry.addData("Left Power", d1.getPower());
+                telemetry.addData("Right Power", e1.getPower());
+                telemetry.addData("Hat Y", hat_y);
+                telemetry.addData("Posição do Braço Auxiliar", bracoaux.getCurrentPosition());
+                telemetry.update();
+            }
+        }
+    }
+}
