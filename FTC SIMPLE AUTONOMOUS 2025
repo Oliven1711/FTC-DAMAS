@@ -1,0 +1,211 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
+@Autonomous(name = "DamasAutonomousPEBRIGHT", group = "REGIONALAUTONOMOUS")
+public class DamasAutonomousPEBRIGHT extends LinearOpMode {
+
+    private DcMotor e1;         // Motor esquerdo
+    private DcMotor d1;         // Motor direito
+    private DcMotor braco;      // Motor do braço principal
+    private DcMotor bracoaux;   // Motor auxiliar do braço
+
+    @Override
+    public void runOpMode() {
+        // Inicialização dos motores
+        e1 = hardwareMap.get(DcMotor.class, "e1");
+        d1 = hardwareMap.get(DcMotor.class, "d1");
+        braco = hardwareMap.get(DcMotor.class, "braco");
+        bracoaux = hardwareMap.get(DcMotor.class, "bracoaux");
+
+        // Configuração das direções dos motores
+        e1.setDirection(DcMotorSimple.Direction.REVERSE);
+        d1.setDirection(DcMotorSimple.Direction.FORWARD);
+        braco.setDirection(DcMotorSimple.Direction.FORWARD);
+        bracoaux.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        // Reset dos encoders
+        e1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        d1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        braco.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        bracoaux.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        // Configuração do Zero Power Behavior
+        braco.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        bracoaux.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        waitForStart();
+
+        // Sequência de ações a serem executadas
+        executeAction(new Runnable() {
+            @Override
+            public void run() {
+                runToFecharGarraUm();
+            }
+        });
+        executeAction(new Runnable() {
+            @Override
+            public void run() {
+                runToAtrasUm();
+            }
+        });
+        executeAction(new Runnable() {
+            @Override
+            public void run() {
+                runToLevantarGarraUm();
+            }
+        });
+        executeAction(new Runnable() {
+            @Override
+            public void run() {
+                runToAtrasDois();
+            }
+        });
+        executeAction(new Runnable() {
+            @Override
+            public void run() {
+                runToLevantarGarraDois();
+            }
+        });
+        executeAction(new Runnable() {
+            @Override
+            public void run() {
+                runToSoltarBlocoUm();
+            }
+        });
+        executeAction(new Runnable() {
+            @Override
+            public void run() {
+                runToFrenteUm();
+            }
+        });
+        executeAction(new Runnable() {
+            @Override
+            public void run() {
+                runToBaixarGarraUm();
+            }
+        });
+
+        // Parada final dos motores
+        pararTodosOsMotores();
+    }
+
+    /**
+     * Executa uma ação específica com pequeno atraso entre as ações.
+     */
+    private void executeAction(Runnable action) {
+        action.run();
+        sleep(100); // Pequeno atraso para evitar conflitos entre comandos
+    }
+
+    /**
+     * Move o robô 1 metro para trás.
+     */
+    private void runToAtrasUm() {
+        e1.setTargetPosition(2516); // Valor do encoder para 1 metro
+        d1.setTargetPosition(2516);
+        PosMotores(e1, d1, 1.0);
+    }
+
+    /**
+     * Levanta o braço auxiliar para 45 graus.
+     */
+    private void runToLevantarGarraUm() {
+        bracoaux.setTargetPosition(950); // Valor para levantar a 45 graus
+        PosMotor(bracoaux, 0.3);
+    }
+
+    /**
+     * Abaixa o braço auxiliar.
+     */
+    private void runToBaixarGarraUm() {
+        bracoaux.setTargetPosition(-950); // Valor para abaixar
+        PosMotor(bracoaux, 0.6);
+    }
+
+    /**
+     * Solta o bloco abrindo o braço principal.
+     */
+    private void runToSoltarBlocoUm() {
+        braco.setTargetPosition(-72); // Valor para abrir o braço
+        PosMotor(braco, 1.0);
+    }
+
+    /**
+     * Fecha o braço principal para segurar um bloco.
+     */
+    private void runToFecharGarraUm() {
+        braco.setTargetPosition(72); // Valor para fechar o braço
+        PosMotor(braco, 1.0);
+    }
+
+    /**
+     * Move o robô para frente em um pequeno deslocamento.
+     */
+    private void runToFrenteUm() {
+        e1.setTargetPosition(-839); // Valor para deslocar 20 cm
+        d1.setTargetPosition(-839);
+        PosMotores(e1, d1, 1.0);
+    }
+
+    /**
+     * Move o robô para trás em um segundo deslocamento.
+     */
+    private void runToAtrasDois() {
+        e1.setTargetPosition(1258); // Valor para deslocamento adicional
+        d1.setTargetPosition(1258);
+        PosMotores(e1, d1, 1.0);
+    }
+
+    /**
+     * Levanta o braço auxiliar em um segundo ajuste.
+     */
+    private void runToLevantarGarraDois() {
+        bracoaux.setTargetPosition(950); // Levanta o braço auxiliar novamente
+        PosMotor(bracoaux, 0.3);
+    }
+
+    /**
+     * Método genérico para mover dois motores sincronizados.
+     */
+    private void PosMotores(DcMotor motor1, DcMotor motor2, double power) {
+        motor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motor1.setPower(power);
+        motor2.setPower(power);
+
+        while (opModeIsActive() && motor1.isBusy() && motor2.isBusy()) {
+            idle(); // Evita travar o programa
+        }
+
+        motor1.setPower(0);
+        motor2.setPower(0);
+    }
+
+    /**
+     * Método genérico para mover um único motor.
+     */
+    private void PosMotor(DcMotor motor, double power) {
+        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motor.setPower(power);
+
+        while (opModeIsActive() && motor.isBusy()) {
+            idle();
+        }
+
+        motor.setPower(0);
+    }
+
+    /**
+     * Para todos os motores do robô.
+     */
+    private void pararTodosOsMotores() {
+        e1.setPower(0);
+        d1.setPower(0);
+        braco.setPower(0);
+        bracoaux.setPower(0);
+    }
+}
