@@ -9,14 +9,16 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @TeleOp(name = "DamasTeleOPPE", group = "REGIONALTELEOP")
 public class DamasTeleOPPE extends LinearOpMode {
 
+    // Variáveis e componentes
     private ElapsedTime runtime = new ElapsedTime();
-
     private DcMotor e1;
     private DcMotor d1;
     private DcMotor braco;
     private DcMotor bracoaux;
 
-    private double speedFactor = 0.7; // Fator de velocidade para o bracoaux
+    private double speedFactor = 0.8; // Fator de velocidade para o robô e braço auxiliar
+    private double powerScale = 0.7;  // Fator para reduzir potência do bracoaux para 70%
+    private double deadZone = 0.2;    // Zona morta de 10% para o gamepad2.left_stick_y
 
     @Override
     public void runOpMode() {
@@ -30,34 +32,39 @@ public class DamasTeleOPPE extends LinearOpMode {
 
         // Aguarda o início da operação
         waitForStart();
+
         if (opModeIsActive()) {
             while (opModeIsActive()) {
-                // Controle dos motores
-                e1.setPower(-gamepad1.left_stick_y + gamepad1.right_stick_x);
-                d1.setPower(-gamepad1.left_stick_y - gamepad1.right_stick_x);
+                // Controle das rodas
+                e1.setPower((-gamepad1.left_stick_y + gamepad1.right_stick_x) * speedFactor);
+                d1.setPower((-gamepad1.left_stick_y - gamepad1.right_stick_x) * speedFactor);
 
-                // Controle do motor do braço
+                // Controle do braço principal
                 if (gamepad2.y) {
-                    braco.setPower(0.8);
+                    braco.setPower(0.8); // Sobe o braço
                 } else if (gamepad2.a) {
-                    braco.setPower(-0.6);
+                    braco.setPower(-0.6); // Desce o braço
                 } else {
-                    braco.setPower(0);
+                    braco.setPower(0); // Para o braço
                 }
 
-                // Controle do motor bracoaux com hat e speedFactor
-                double hat_y = gamepad2.dpad_up ? -1 : (gamepad2.dpad_down ? 1 : 0);
-                if (Math.abs(hat_y) > 0.1) {
-                    bracoaux.setPower(hat_y * speedFactor); // Aplica o fator de velocidade
+                // Controle do braço auxiliar com redução de potência e zona morta
+                double stickInput = gamepad2.left_stick_y;
+                double power = 0;
+
+                if (Math.abs(stickInput) > deadZone) {
+                    power = stickInput * powerScale; // Aplica redução de 70% se fora da zona morta
                 } else {
-                    bracoaux.setPower(0.1); // Contra-gravidade mínima
+                    power = 0.1; // Contra-gravidade mínima
                 }
 
-                // Atualização de telemetria
-                telemetry.addData("Left Power", d1.getPower());
-                telemetry.addData("Right Power", e1.getPower());
-                telemetry.addData("Hat Y", hat_y);
-                telemetry.addData("Posição do Braço Auxiliar", bracoaux.getCurrentPosition());
+                bracoaux.setPower(power);
+
+                // Telemetria - Informações na tela
+                telemetry.addData("Runtime", runtime.toString());
+                telemetry.addData("Velocidade das rodas", "E1: %.2f, D1: %.2f", e1.getPower(), d1.getPower());
+                telemetry.addData("Potência ajustada do braço auxiliar", power);
+                telemetry.addData("Posição do braço auxiliar", bracoaux.getCurrentPosition());
                 telemetry.update();
             }
         }
